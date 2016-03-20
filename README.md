@@ -63,7 +63,7 @@ scanning port 20-30000...
 ```
 
 ### Fork Notes:
-The original version had some comiling errors... I addressed them and added a comment line pre-fixed with `//FIX:`
+The original version had some compiling errors... I addressed them and added a comment line pre-fixed with `//FIX:`
 
 ### What I want to address:
 * Right now I want to work on the unknown port types
