@@ -12,9 +12,10 @@ import (
 	"fmt"
 	//	"io/ioutil"
 	//	"strings"
+	"time"
+
 	"github.com/anvie/port-scanner/predictors"
 	"github.com/anvie/port-scanner/predictors/webserver"
-	"time"
 )
 
 type PortScanner struct {
@@ -28,6 +29,8 @@ func NewPortScanner(host string) *PortScanner {
 		&webserver.ApachePredictor{},
 		&webserver.NginxPredictor{},
 	},
+		//FIX: Added dummy int for timeout <dtoebe>
+		0,
 	}
 }
 func (h PortScanner) SetTimeout(timeout int) {
@@ -47,7 +50,8 @@ func (h PortScanner) IsOpen(port int) bool {
 	if err != nil {
 		return false
 	}
-	conn, err := net.DialTimeout("tcp", tcpAddr.String(), h.timeout)
+	//FIX: Inline convert h.timeout(int) to time.Duration <dtoebe>
+	conn, err := net.DialTimeout("tcp", tcpAddr.String(), time.Duration(h.timeout))
 	if err != nil {
 		return false
 	}
@@ -73,13 +77,15 @@ func (h PortScanner) hostPort(port int) string {
 
 const UNKNOWN = "<unknown>"
 
-func (h PortScanner) openConn(host string) (*net.TCPConn, error) {
+//FIX: now returns net.Conn in place of *net.TCPConn literal <dtoebe>
+func (h PortScanner) openConn(host string) (net.Conn, error) {
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", host)
 	if err != nil {
 		return nil, err
 	}
 
-	conn, err := net.DialTimeout("tcp", tcpAddr.String(), h.timeout)
+	//FIX: Inline convert h.timeout(int) to time.Duratio <dtoebe>
+	conn, err := net.DialTimeout("tcp", tcpAddr.String(), time.Duration(h.timeout))
 	if err != nil {
 		return nil, err
 	}
